@@ -1,0 +1,17 @@
+{
+  "type": "object",
+  "properties": {
+    "nome": {
+      "type": "string"
+    },
+    "answers": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": "1",
+        "maximum": "4"
+      }
+    }
+  },
+  "required": ["nome", "answers"]
+}

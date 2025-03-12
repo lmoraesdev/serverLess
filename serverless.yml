@@ -1,0 +1,55 @@
+org: lezzito
+app: serverless-activities
+service: serverless
+
+params:
+  default:
+    dbName: serverless
+  dev:
+    connectionString: mongodb://localhost:27017/${self:params.default.dbName}
+    salt: e229fa2bbbda31e844d8985feb5567f0
+    jwtSecret: 2e160b78d823871b3cf8ed010f6f7c358a6402970f037ec7a157fc85499adb2bb8ebaf1ec506c839293a3d2c3e94411245cf1a9f8caf2447b39b8d3803b4d2a0c7a47dfd1667cdac9818df7a9909025779b99a642e431e2ca59c9a182212b53b8a1030b8448daaa29da4956a76c7d8224c90ccf198a3e5126ffc3ac5fd83daa5de688e06367888f1add0719b662e482cba4f2e1735ddf46852060032edc9
+  prod:
+
+provider:
+  httpApi:
+    cors: true
+  name: aws
+  runtime: nodejs20.x
+  environment:
+    MONGODB_CONNECTIONSTRING: ${self:params.dev.connectionString}
+    MONGO_DB_NAME: ${self:params.default.dbName}
+    SALT: ${self:params.dev.salt}
+    JWT_SECRET: ${self:params.dev.jwtSecret}
+  region: us-east-1
+
+functions:
+  sendResponse:
+    handler: api/handlers.sendResponse
+    events:
+      - httpApi:
+          path: /api/results
+          method: post
+  #          request:
+  #            schemas:
+  #              application/json: ${file(./schemas/sendResponse.json)}
+
+  getResult:
+    handler: api/handlers.getResult
+    events:
+      - httpApi:
+          path: /api/results/{id}
+          method: get
+
+  login:
+    handler: api/handlers.login
+    events:
+      - httpApi:
+          path: /api/login
+          method: post
+#          request:
+#            schemas:
+#              application/json: ${file(./schemas/login.json)}
+
+plugins:
+  - serverless-offline
